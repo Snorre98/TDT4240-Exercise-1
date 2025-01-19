@@ -5,14 +5,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-import java.awt.Rectangle;
 import java.util.Random;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -31,6 +35,10 @@ public class HelicopterGame extends ApplicationAdapter {
     private float currentYSpeedUp;
     private float currentYSpeedDown;
 
+    private Stage stage;
+    private Label coordinatesLabel;
+    private BitmapFont font;
+
     @Override
     public void create() {
         batch = new SpriteBatch();
@@ -39,11 +47,30 @@ public class HelicopterGame extends ApplicationAdapter {
         heliSprite.setSize(3,1);
         viewport = new FitViewport(8,8);
 
+        int row_height = Gdx.graphics.getWidth();
+
         currentXSpeed = setRandomXSpeed();
         currentYSpeedUp = setRandomYSpeedUp();
         currentYSpeedDown = setRandomYSpeedDown();
 
         touchPos = new Vector2();
+        // Create stage with our viewport
+        stage = new Stage(viewport);
+
+        // Create a basic font
+        font = new BitmapFont();
+        //font.getData().setScale(0.01f);
+
+        // Create label style with our font
+        Label.LabelStyle style = new Label.LabelStyle(font, Color.WHITE);
+
+        // Create the label with the style
+        coordinatesLabel = new Label("TEST TEST TEST", style);
+        coordinatesLabel.setPosition(0, Gdx.graphics.getHeight()-row_height);
+        coordinatesLabel.setSize(Gdx.graphics.getWidth(), row_height);
+        coordinatesLabel.setAlignment(Align.center);
+
+        stage.addActor(coordinatesLabel);
     }
 
     @Override
@@ -54,9 +81,11 @@ public class HelicopterGame extends ApplicationAdapter {
     @Override
     public void render() {
         draw();
+
         input();
         logic();
     }
+
 
     private void draw() {
         ScreenUtils.clear(Color.BLACK);
@@ -64,7 +93,9 @@ public class HelicopterGame extends ApplicationAdapter {
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
         heliSprite.draw(batch);
-
+        //coordinatesLabel.setText(String.format("X: %.1f, Y: %.1f", heliSprite.getX(), heliSprite.getY()));
+        // Draw stage (which contains our label)
+        //stage.draw();
         batch.end();
     }
 
@@ -176,5 +207,7 @@ public class HelicopterGame extends ApplicationAdapter {
     public void dispose() {
         batch.dispose();
         heliTexture.dispose();
+        stage.dispose();
+        font.dispose();
     }
 }
