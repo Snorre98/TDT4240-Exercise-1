@@ -17,7 +17,6 @@ public class HelicopterGame extends ApplicationAdapter {
     private SpriteBatch batch;
     private Texture heliTexture;
     private Sprite heliSprite;
-    private Rectangle heliRect;
     private FitViewport viewport;
 
     @Override
@@ -25,8 +24,7 @@ public class HelicopterGame extends ApplicationAdapter {
         batch = new SpriteBatch();
         heliTexture = new Texture("heli-sprite.png");
         heliSprite = new Sprite(heliTexture);
-        heliSprite.setSize(1,1);
-        heliRect = new Rectangle();
+        heliSprite.setSize(3,1);
         viewport = new FitViewport(8,8);
     }
 
@@ -56,7 +54,7 @@ public class HelicopterGame extends ApplicationAdapter {
 
     private float setRandomXSpeed(){
         float min = 1.5f;
-        float max = 2.25f;
+        float max = 2.0f;
         float delta = Gdx.graphics.getDeltaTime();
         float minD = min*delta;
         float maxD = max*delta;
@@ -66,8 +64,8 @@ public class HelicopterGame extends ApplicationAdapter {
     }
 
     private float setRandomYSpeedUp(){
-        float min = .50f;
-        float max = .75f;
+        float min = .25f;
+        float max = .50f;
         float delta = Gdx.graphics.getDeltaTime();
         float minD = min*delta;
         float maxD = max*delta;
@@ -77,8 +75,8 @@ public class HelicopterGame extends ApplicationAdapter {
     }
 
     private float setRandomYSpeedDown(){
-        float min = 2.0f;
-        float max = 2.5f;
+        float min = 1.75f;
+        float max = 2.25f;
         float delta = Gdx.graphics.getDeltaTime();
         float minD = min*delta;
         float maxD = max*delta;
@@ -89,7 +87,9 @@ public class HelicopterGame extends ApplicationAdapter {
 
     private void logic(){
         float worldWidth = viewport.getWorldWidth();
+        float worldHeight= viewport.getWorldHeight();
         float heliWidth = heliSprite.getWidth();
+        float heliHeight = heliSprite.getHeight();
 
 
         if(heliSprite.getX() > worldWidth - heliWidth){
@@ -98,7 +98,7 @@ public class HelicopterGame extends ApplicationAdapter {
             movingRight = true;
         }
 
-        if(heliSprite.getY() > worldWidth - heliWidth){
+        if(heliSprite.getY() > worldHeight - heliHeight){
             movingUp = false;
         } else if (heliSprite.getY() < 0) {
             movingUp = true;
