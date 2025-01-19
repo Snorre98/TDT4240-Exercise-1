@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -20,6 +21,8 @@ public class HelicopterGame extends ApplicationAdapter {
     private Texture heliTexture;
     private Sprite heliSprite;
     private FitViewport viewport;
+
+    private Vector2 touchPos;
 
     private boolean movingRight = true;
     private boolean movingUp = true;
@@ -39,6 +42,8 @@ public class HelicopterGame extends ApplicationAdapter {
         currentXSpeed = setRandomXSpeed();
         currentYSpeedUp = setRandomYSpeedUp();
         currentYSpeedDown = setRandomYSpeedDown();
+
+        touchPos = new Vector2();
     }
 
     @Override
@@ -59,6 +64,7 @@ public class HelicopterGame extends ApplicationAdapter {
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
         heliSprite.draw(batch);
+
         batch.end();
     }
 
@@ -87,7 +93,8 @@ public class HelicopterGame extends ApplicationAdapter {
         return Gdx.input.isKeyPressed(Input.Keys.RIGHT)
             || Gdx.input.isKeyPressed(Input.Keys.LEFT)
             || Gdx.input.isKeyPressed(Input.Keys.UP)
-            || Gdx.input.isKeyPressed(Input.Keys.DOWN);
+            || Gdx.input.isKeyPressed(Input.Keys.DOWN)
+            || Gdx.input.isTouched();
     }
 
     private void input(){
@@ -109,6 +116,12 @@ public class HelicopterGame extends ApplicationAdapter {
         }else if(Gdx.input.isKeyPressed(Input.Keys.DOWN)){
             heliSprite.translateY(-speed*delta*1.25f);
             movingUp = false;
+        }
+
+        if(Gdx.input.isTouched()){
+            touchPos.set(Gdx.input.getX(), Gdx.input.getY());
+            viewport.unproject(touchPos);
+            heliSprite.setCenter(touchPos.x, touchPos.y);
         }
     }
 
