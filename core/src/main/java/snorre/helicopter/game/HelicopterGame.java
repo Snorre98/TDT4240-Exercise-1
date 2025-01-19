@@ -19,6 +19,13 @@ public class HelicopterGame extends ApplicationAdapter {
     private Sprite heliSprite;
     private FitViewport viewport;
 
+    private boolean movingRight = true;
+    private boolean movingUp = true;
+
+    private float currentXSpeed;
+    private float currentYSpeedUp;
+    private float currentYSpeedDown;
+
     @Override
     public void create() {
         batch = new SpriteBatch();
@@ -26,6 +33,10 @@ public class HelicopterGame extends ApplicationAdapter {
         heliSprite = new Sprite(heliTexture);
         heliSprite.setSize(3,1);
         viewport = new FitViewport(8,8);
+
+        currentXSpeed = setRandomXSpeed();
+        currentYSpeedUp = setRandomYSpeedUp();
+        currentYSpeedDown = setRandomYSpeedDown();
     }
 
     @Override
@@ -39,7 +50,6 @@ public class HelicopterGame extends ApplicationAdapter {
         logic();
     }
 
-
     private void draw() {
         ScreenUtils.clear(Color.BLACK);
         viewport.apply();
@@ -49,73 +59,63 @@ public class HelicopterGame extends ApplicationAdapter {
         batch.end();
     }
 
-    private boolean movingRight = true;
-    private boolean movingUp = true;
-
     private float setRandomXSpeed(){
         float min = 1.5f;
         float max = 2.0f;
-        float delta = Gdx.graphics.getDeltaTime();
-        float minD = min*delta;
-        float maxD = max*delta;
         Random r = new Random();
-
-        return minD + r.nextFloat() * (maxD - minD);
+        return min + r.nextFloat() * (max - min);
     }
 
     private float setRandomYSpeedUp(){
         float min = .25f;
         float max = .50f;
-        float delta = Gdx.graphics.getDeltaTime();
-        float minD = min*delta;
-        float maxD = max*delta;
         Random r = new Random();
-
-        return minD + r.nextFloat() * (maxD - minD);
+        return min + r.nextFloat() * (max - min);
     }
 
     private float setRandomYSpeedDown(){
         float min = 1.75f;
         float max = 2.25f;
-        float delta = Gdx.graphics.getDeltaTime();
-        float minD = min*delta;
-        float maxD = max*delta;
         Random r = new Random();
-
-        return minD + r.nextFloat() * (maxD - minD);
+        return min + r.nextFloat() * (max - min);
     }
 
     private void logic(){
+        float delta = Gdx.graphics.getDeltaTime();
         float worldWidth = viewport.getWorldWidth();
-        float worldHeight= viewport.getWorldHeight();
+        float worldHeight = viewport.getWorldHeight();
         float heliWidth = heliSprite.getWidth();
         float heliHeight = heliSprite.getHeight();
 
 
         if(heliSprite.getX() > worldWidth - heliWidth){
             movingRight = false;
+            currentXSpeed = setRandomXSpeed();
         }else if(heliSprite.getX() < 0){
             movingRight = true;
+            currentXSpeed = setRandomXSpeed();
         }
 
         if(heliSprite.getY() > worldHeight - heliHeight){
             movingUp = false;
+            currentYSpeedDown = setRandomYSpeedDown();
         } else if (heliSprite.getY() < 0) {
             movingUp = true;
+            currentYSpeedUp = setRandomYSpeedUp();
         }
 
         if(movingRight){
-            heliSprite.translateX(setRandomXSpeed());
+            heliSprite.translateX(currentXSpeed*delta);
             heliSprite.setFlip(true, false);
         }else {
-            heliSprite.translateX(-setRandomXSpeed());
+            heliSprite.translateX(-currentXSpeed*delta);
             heliSprite.setFlip(false, false);
         }
 
         if(movingUp){
-            heliSprite.translateY(setRandomYSpeedUp());
+            heliSprite.translateY(currentYSpeedUp*delta);
         } else {
-            heliSprite.translateY(-setRandomYSpeedDown());
+            heliSprite.translateY(-currentYSpeedDown*delta);
         }
 
     }
