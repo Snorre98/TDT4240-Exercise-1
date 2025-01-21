@@ -7,10 +7,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -43,11 +45,14 @@ public class HelicopterGame extends ApplicationAdapter {
 
     //private StringBuilder sb;
 
+    private Animation<TextureRegion> heliAnimation;
+    private float stateTime;
+
 
     @Override
     public void create() {
         batch = new SpriteBatch();
-        heliTexture = new Texture("heli-sprite.png");
+        heliTexture = new Texture("heli1.png");
         heliSprite = new Sprite(heliTexture);
         heliSprite.setSize(3,1);
         viewport = new FitViewport(16,16);
@@ -55,6 +60,18 @@ public class HelicopterGame extends ApplicationAdapter {
         currentYSpeedUp = setRandomYSpeedUp();
         currentYSpeedDown = setRandomYSpeedDown();
         touchPos = new Vector2();
+        Texture frame1 = new Texture("heli1.png");
+        Texture frame2 = new Texture("heli2.png");
+        Texture frame3 = new Texture("heli3.png");
+        TextureRegion[] frames = new TextureRegion[3];
+        frames[0] = new TextureRegion(frame1);
+        frames[1] = new TextureRegion(frame2);
+        frames[2] = new TextureRegion(frame3);
+
+        heliAnimation = new Animation<>(0.1f, frames);
+        stateTime = 0f;
+
+
 
 
 
@@ -83,7 +100,19 @@ public class HelicopterGame extends ApplicationAdapter {
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
-        heliSprite.draw(batch);
+        //heliSprite.draw(batch);
+        stateTime += Gdx.graphics.getDeltaTime();  // Accumulate elapsed time
+
+        // Get current frame
+        TextureRegion currentFrame = heliAnimation.getKeyFrame(stateTime, true);  // true for looping
+
+        batch.begin();
+        batch.draw(currentFrame,
+            heliSprite.getX(), heliSprite.getY(),
+            heliSprite.getWidth(), heliSprite.getHeight());
+        // Rest of your drawing code...
+        batch.end();
+
         String xPos = String.format("X: %2d", (int)heliSprite.getX());
         String yPos = String.format("Y: %2d", (int)heliSprite.getY());
         //sb = new StringBuilder();
@@ -205,7 +234,10 @@ public class HelicopterGame extends ApplicationAdapter {
     @Override
     public void dispose() {
         batch.dispose();
-        heliTexture.dispose();
+        //heliTexture.dispose();
+        for(TextureRegion frame : heliAnimation.getKeyFrames()) {
+            frame.getTexture().dispose();
+        }
         font.dispose();
     }
 }
