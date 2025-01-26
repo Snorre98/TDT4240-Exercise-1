@@ -71,10 +71,6 @@ public class HelicopterGame extends ApplicationAdapter {
         heliAnimation = new Animation<>(0.1f, frames);
         stateTime = 0f;
 
-
-
-
-
         glyXPos = new GlyphLayout();
         glyYPos = new GlyphLayout();
 
@@ -94,34 +90,29 @@ public class HelicopterGame extends ApplicationAdapter {
         logic();
     }
 
-
     private void draw() {
         ScreenUtils.clear(Color.BLACK);
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
-        batch.begin();
-        //heliSprite.draw(batch);
-        stateTime += Gdx.graphics.getDeltaTime();  // Accumulate elapsed time
-
-        // Get current frame
-        TextureRegion currentFrame = heliAnimation.getKeyFrame(stateTime, true);  // true for looping
 
         batch.begin();
+
+        stateTime += Gdx.graphics.getDeltaTime();
+        TextureRegion currentFrame = heliAnimation.getKeyFrame(stateTime, true);
+
+        currentFrame.flip(movingRight, false);  // Flip based on direction
         batch.draw(currentFrame,
             heliSprite.getX(), heliSprite.getY(),
             heliSprite.getWidth(), heliSprite.getHeight());
-        // Rest of your drawing code...
-        batch.end();
+        currentFrame.flip(movingRight, false);  // Flip back to original state
 
         String xPos = String.format("X: %2d", (int)heliSprite.getX());
         String yPos = String.format("Y: %2d", (int)heliSprite.getY());
-        //sb = new StringBuilder();
-        //sb.append("(").append(xPos).append(",").append(yPos).append(")");
         glyXPos.setText(font, xPos);
         glyYPos.setText(font, yPos);
         font.draw(batch, glyXPos, .1f, viewport.getWorldHeight() - glyXPos.height);
-       // sb = new StringBuilder();
         font.draw(batch, glyYPos, .1f, viewport.getWorldHeight() - glyXPos.height - glyYPos.height);
+
         batch.end();
     }
 
@@ -160,10 +151,8 @@ public class HelicopterGame extends ApplicationAdapter {
         if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
             heliSprite.translateX(speed*delta);
             movingRight = true;
-            heliSprite.setFlip(true, false);
         } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             heliSprite.translateX(-speed*delta);
-            heliSprite.setFlip(false, false);
             movingRight = false;
         }
 
@@ -188,8 +177,6 @@ public class HelicopterGame extends ApplicationAdapter {
         float heliWidth = heliSprite.getWidth();
         float heliHeight = heliSprite.getHeight();
 
-        //Gdx.app.log("xyPos:", xyPos);
-
         if(!isControlled()){
             float delta = Gdx.graphics.getDeltaTime();
 
@@ -212,10 +199,8 @@ public class HelicopterGame extends ApplicationAdapter {
 
             if(movingRight){
                 heliSprite.translateX(currentXSpeed*delta);
-                heliSprite.setFlip(true, false);
             }else {
                 heliSprite.translateX(-currentXSpeed*delta);
-                heliSprite.setFlip(false, false);
             }
 
             if(movingUp){
